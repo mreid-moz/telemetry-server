@@ -69,6 +69,9 @@ class Job:
         self._bucket_name = config.bucket
         self._aws_key = config.aws_key
         self._aws_secret_key = config.aws_secret_key
+        # Allow job script to import things from it's local folder
+        # (I'm sure there are smarter ways to do this, but this works)
+        sys.path.append(os.path.dirname(os.path.abspath(config.job_script)))
         modulefd = open(config.job_script)
         ## Lifted from FileDriver.py in jydoop.
         self._job_module = imp.load_module("telemetry_job", modulefd, config.job_script, ('.py', 'U', 1))
