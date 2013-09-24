@@ -332,6 +332,14 @@ class Mapper:
             input_file["handle"].close()
             if "raw_handle" in input_file:
                 input_file["raw_handle"].close()
+
+        # If there is a map_finished function, we call it to flush any job-side
+        # cached values... For jobs that do linear scan this is very smart!!!
+        mapfinishedfunc = getattr(module, 'map_finished', None)
+        if mapfinishedfunc is not None and callable(mapfinishedfunc):
+            mapfinishedfunc(context)
+
+        # Close context
         context.finish()
 
     def open_input_file(self, input_file):
