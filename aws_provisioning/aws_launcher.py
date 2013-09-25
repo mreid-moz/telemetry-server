@@ -23,11 +23,11 @@ class Launcher(object):
         self.aws_key = args.aws_key
         self.aws_secret_key = args.aws_secret_key
         self.ssl_user = self.config.get("ssl_user", "ubuntu")
-        self.ssl_key_path = self.config.get("ssl_key_path", "~/.ssh/id_rsa.pub")
+        self.ssl_key_path = self.config.get("ssl_key_path", "~/.ssh/id_rsa")
 
     def get_arg_parser(self):
         parser = argparse.ArgumentParser(description='Launch AWS EC2 instances')
-        parser.add_argument("config", help="JSON File contianing configuration", type=file)
+        parser.add_argument("config", help="JSON File containing configuration", type=file)
         parser.add_argument("-k", "--aws-key", help="AWS Key", required=True)
         parser.add_argument("-s", "--aws-secret-key", help="AWS Secret Key", required=True)
         return parser
@@ -52,7 +52,8 @@ class Launcher(object):
     def install_telemetry_code(self, instance):
         home = "/home/" + self.ssl_user
         with cd(home):
-            run("git clone https://github.com/mreid-moz/telemetry-server.git")
+            #run("git clone https://github.com/mreid-moz/telemetry-server.git")
+            run("git clone -b map-reduce-finished-map-hack -- https://github.com/jonasfj/telemetry-server.git")
 
     def choose_telemetry_branch(self, instance):
         # By default we use the master branch, but if you wanted to use a
