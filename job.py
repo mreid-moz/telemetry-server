@@ -11,8 +11,8 @@ import sys
 import os
 import json
 import marshal
-import zipimport
 import traceback
+from zipimport import zipimporter
 from datetime import datetime
 from multiprocessing import Process
 from telemetry_schema import TelemetrySchema
