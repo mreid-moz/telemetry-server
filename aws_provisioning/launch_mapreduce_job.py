@@ -41,9 +41,9 @@ class MapReduceLauncher(SimpleLauncher):
                         mr_cfg.get("num-reducers", 1), input_filter_path,
                         data_dir, work_dir, output_path, self.aws_key,
                         self.aws_secret_key, mr_cfg["data_bucket"])
-            run("python job.py %s --num-mappers %s --num-reducers %s " +
-                "--input-filter %s --data-dir %s --work-dir %s --output %s " +
-                "--aws-key \"%s\" --aws-secret-key \"%s\" --bucket \"%s\"" %
+            run(("python job.py %s --num-mappers %s --num-reducers %s " +
+                 "--input-filter %s --data-dir %s --work-dir %s --output %s " +
+                 "--aws-key \"%s\" --aws-secret-key \"%s\" --bucket \"%s\"") %
                 job_args)
             compress_output = mr_cfg.get("output_compression", False)
             if compress_output:
