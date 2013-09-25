@@ -37,12 +37,20 @@ class MapReduceLauncher(SimpleLauncher):
             job_script_path = "/".join((job_dir, os.path.basename(job_script)))
             input_filter_path = "/".join((job_dir, os.path.basename(input_filter)))
             output_path = "/".join((job_dir, "output.txt"))
-            job_args = (job_script_path, input_filter_path, data_dir, work_dir, output_path, self.aws_key, self.aws_secret_key, mr_cfg["data_bucket"])
-            run('python job.py %s --input-filter %s --data-dir %s --work-dir %s --output %s --aws-key "%s" --aws-secret-key "%s" --bucket "%s"' % job_args)
-            # TODO: consult "output_compression"
-            run("lzma " + output_path)
-            # TODO: upload job/output.txt.lzma to S3 output_bucket.output_filename
-            result = get(output_path + ".lzma", mr_cfg["output_filename"])
+            job_args = (job_script_path, mr_cfg.get("num-mappers", 4), 
+                        mr_cfg.get("num-reducers", 1), input_filter_path,
+                        data_dir, work_dir, output_path, self.aws_key,
+                        self.aws_secret_key, mr_cfg["data_bucket"])
+            run("python job.py %s --num-mappers %s --num-reducers %s " +
+                "--input-filter %s --data-dir %s --work-dir %s --output %s " +
+                "--aws-key \"%s\" --aws-secret-key \"%s\" --bucket \"%s\"" %
+                job_args)
+            compress_output = mr_cfg.get("output_compression", False)
+            if compress_output:
+                run("xz -z0 " + output_path)
+                output_path += ".xz"
+            # TODO: upload job/output.txt.xz to S3 output_bucket.output_filename
+            result = get(output_path, mr_cfg["output_filename"])
             # TODO: check result.succeeded before bailing.
 
 def main():
