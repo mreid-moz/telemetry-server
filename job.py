@@ -11,6 +11,7 @@ import sys
 import os
 import json
 import marshal
+import zipimport
 import traceback
 from datetime import datetime
 from multiprocessing import Process
@@ -69,12 +70,16 @@ class Job:
         self._bucket_name = config.bucket
         self._aws_key = config.aws_key
         self._aws_secret_key = config.aws_secret_key
-        # Allow job script to import things from it's local folder
-        # (I'm sure there are smarter ways to do this, but this works)
-        sys.path.append(os.path.dirname(os.path.abspath(config.job_script)))
-        modulefd = open(config.job_script)
-        ## Lifted from FileDriver.py in jydoop.
-        self._job_module = imp.load_module("telemetry_job", modulefd, config.job_script, ('.py', 'U', 1))
+        # Allow for import from zip files, this way job scripts can include
+        # resources they need
+        if config.job_script.endswith(".zip"):
+            zipimp = zipimporter(config.job_script)
+            name = os.path.basename(config.job_script)[:-4]
+            self._job_module = zipimp.load_module(name)
+        else:
+            modulefd = open(config.job_script)
+            ## Lifted from FileDriver.py in jydoop.
+            self._job_module = imp.load_module("telemetry_job", modulefd, config.job_script, ('.py', 'U', 1))
 
     def dump_stats(self, partitions):
         total = sum(partitions)
