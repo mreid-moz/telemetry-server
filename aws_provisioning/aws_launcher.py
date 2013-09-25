@@ -52,8 +52,7 @@ class Launcher(object):
     def install_telemetry_code(self, instance):
         home = "/home/" + self.ssl_user
         with cd(home):
-            #run("git clone https://github.com/mreid-moz/telemetry-server.git")
-            run("git clone -b map-reduce-finished-map-hack -- https://github.com/jonasfj/telemetry-server.git")
+            run("git clone https://github.com/mreid-moz/telemetry-server.git")
 
     def choose_telemetry_branch(self, instance):
         # By default we use the master branch, but if you wanted to use a
