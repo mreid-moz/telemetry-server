@@ -12,6 +12,7 @@ import os
 import json
 import marshal
 import traceback
+from zipimport import zipimporter
 from datetime import datetime
 from multiprocessing import Process
 from telemetry_schema import TelemetrySchema
@@ -69,9 +70,16 @@ class Job:
         self._bucket_name = config.bucket
         self._aws_key = config.aws_key
         self._aws_secret_key = config.aws_secret_key
-        modulefd = open(config.job_script)
-        ## Lifted from FileDriver.py in jydoop.
-        self._job_module = imp.load_module("telemetry_job", modulefd, config.job_script, ('.py', 'U', 1))
+        # Allow for import from zip files, this way job scripts can include
+        # resources they need
+        if config.job_script.endswith(".zip"):
+            zipimp = zipimporter(config.job_script)
+            name = os.path.basename(config.job_script)[:-4]
+            self._job_module = zipimp.load_module(name)
+        else:
+            modulefd = open(config.job_script)
+            ## Lifted from FileDriver.py in jydoop.
+            self._job_module = imp.load_module("telemetry_job", modulefd, config.job_script, ('.py', 'U', 1))
 
     def dump_stats(self, partitions):
         total = sum(partitions)
@@ -332,6 +340,14 @@ class Mapper:
             input_file["handle"].close()
             if "raw_handle" in input_file:
                 input_file["raw_handle"].close()
+
+        # If there is a map_finished function, we call it to flush any job-side
+        # cached values... For jobs that do linear scan this is very smart!!!
+        mapfinishedfunc = getattr(module, 'map_finished', None)
+        if mapfinishedfunc is not None and callable(mapfinishedfunc):
+            mapfinishedfunc(context)
+
+        # Close context
         context.finish()
 
     def open_input_file(self, input_file):
