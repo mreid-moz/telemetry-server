@@ -19,7 +19,6 @@ class Manager(Thread):
             worker.start()
             # Sit's back and wait for the worker to die
             worker.join() #TODO, timeout and kill worker process tree, also only retry failed sqs messages 3 times
-            if worker.is_alive():
             # Then goes on to create the next worker :)
             continue
 
