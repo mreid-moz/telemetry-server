@@ -1,0 +1,9 @@
+playground-central
+==================
+
+This is a playground repositoring for testing changeset-based code-review using RB
+
+Add a line
+Add yet another line after patching RB
+
+I'm adding this line because we need at least couple of commits in this repo.
