@@ -28,6 +28,12 @@ try:
     BOTO_AVAILABLE=True
 except ImportError:
     BOTO_AVAILABLE=False
+try:
+    from backports import lzma
+    has_lzma = True
+except:
+    print "No backports.lzma"
+    has_lzma = False
 
 def find_min_idx(stuff):
     min_idx = 0
@@ -359,7 +365,7 @@ class Mapper:
     def __init__(self, mapper_id, inputs, work_dir, module, partition_count):
         self.work_dir = work_dir
 
-        print "I am mapper", mapper_id, ", and I'm mapping", len(inputs), "inputs:", inputs
+        print "I am mapper", mapper_id, ", and I'm mapping", len(inputs), "inputs"
         output_file = os.path.join(work_dir, "mapper_" + str(mapper_id))
         mapfunc = getattr(module, 'map', None)
         context = Context(output_file, partition_count)
@@ -399,12 +405,15 @@ class Mapper:
             filename = os.path.join(self.work_dir, "cache", input_file["name"])
 
         if filename.endswith(StorageLayout.COMPRESSED_SUFFIX):
-            decompress_cmd = [StorageLayout.COMPRESS_PATH] + StorageLayout.DECOMPRESSION_ARGS
-            raw_handle = open(filename, "rb")
-            input_file["raw_handle"] = raw_handle
-            # Popen the decompressing version of StorageLayout.COMPRESS_PATH
-            p_decompress = Popen(decompress_cmd, bufsize=65536, stdin=raw_handle, stdout=PIPE, stderr=sys.stderr)
-            input_file["handle"] = p_decompress.stdout
+            if has_lzma and StorageLayout.COMPRESSED_SUFFIX == ".lzma":
+                input_file["handle"] = lzma.open(filename, "rb")
+            else:
+                decompress_cmd = [StorageLayout.COMPRESS_PATH] + StorageLayout.DECOMPRESSION_ARGS
+                raw_handle = open(filename, "rb")
+                input_file["raw_handle"] = raw_handle
+                # Popen the decompressing version of StorageLayout.COMPRESS_PATH
+                p_decompress = Popen(decompress_cmd, bufsize=65536, stdin=raw_handle, stdout=PIPE, stderr=sys.stderr)
+                input_file["handle"] = p_decompress.stdout
         else:
             input_file["handle"] = open(filename, "r")
 
