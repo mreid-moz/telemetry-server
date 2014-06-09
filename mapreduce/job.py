@@ -29,11 +29,15 @@ try:
 except ImportError:
     BOTO_AVAILABLE=False
 try:
-    from backports import lzma
+    import lzma
     has_lzma = True
 except:
-    print "No backports.lzma"
-    has_lzma = False
+    try:
+        from backports import lzma
+        has_lzma = True
+    except:
+        print "No lzma or backports.lzma"
+        has_lzma = False
 
 def find_min_idx(stuff):
     min_idx = 0
@@ -382,16 +386,19 @@ class Mapper:
                 traceback.print_exc(file=sys.stderr)
                 continue
             line_num = 0
-            for line in input_file["handle"]:
-                line_num += 1
-                try:
-                    # Remove the trailing EOL character(s) before passing to
-                    # the map function.
-                    key, value = line.rstrip('\r\n').split("\t", 1)
-                    mapfunc(key, input_file["dimensions"], value, context)
-                except ValueError, e:
-                    # TODO: increment "bad line" metrics.
-                    print "Bad line:", input_file["name"], ":", line_num, e
+            try:
+                for line in input_file["handle"]:
+                    line_num += 1
+                    try:
+                        # Remove the trailing EOL character(s) before passing to
+                        # the map function.
+                        key, value = line.rstrip('\r\n').split("\t", 1)
+                        mapfunc(key, input_file["dimensions"], value, context)
+                    except ValueError, e:
+                        # TODO: increment "bad line" metrics.
+                        print "Bad line:", input_file["name"], ":", line_num, e
+            except EOFError as e:
+                print "Error reading from file", input_file["name"], line_num, e
             input_file["handle"].close()
             if "raw_handle" in input_file:
                 input_file["raw_handle"].close()
@@ -403,6 +410,7 @@ class Mapper:
             # Read so-called remote files from the local cache. Go on the
             # assumption that they have already been downloaded.
             filename = os.path.join(self.work_dir, "cache", input_file["name"])
+            print filename
 
         if filename.endswith(StorageLayout.COMPRESSED_SUFFIX):
             if has_lzma and StorageLayout.COMPRESSED_SUFFIX == ".lzma":
