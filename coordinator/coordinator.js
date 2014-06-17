@@ -174,10 +174,11 @@ function get_filtered_files(req, res, next) {
     } else {
       res.write(",");
     }
-    res.write('"' + row.file_name + "\"\n");
+    res.write('"' + "{" + row.file_name + ":" + row.file_size + "}" + '"\n');
   }, function(err, rowcount) {
     // End of files, finish up.
     if (err) {
+        
       log.info("Found an err on completion: " + JSON.stringify(err));
       return next(err);
     }
