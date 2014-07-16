@@ -161,8 +161,7 @@ function get_filtered_files(req, res, next) {
 
   var jsonResponse = [];
   function constructResponse(row) {
-    var x = {"file_name" : row.file_name, "file_size" : row.file_size};
-    jsonResponse.push(x);
+    jsonResponse.push({"file_name" : row.file_name, "file_size" : row.file_size});
   }
   var query = filter2sql(filter);
 
