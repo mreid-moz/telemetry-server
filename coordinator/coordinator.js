@@ -144,7 +144,7 @@ function filter2sql(filter) {
 }
 
 function get_filtered_files(req, res, next) {
-  log.info(req.params);
+  
   if (!req.params.filter) {
     try {
       req.params.filter = JSON.parse(req.query.filter);
@@ -157,69 +157,45 @@ function get_filtered_files(req, res, next) {
     return next();
   }
   var filter = req.params.filter;
-
-  // Force the type to application/json since we'll be streaming out the rows
-  // manually.
   res.setHeader('content-type', 'application/json');
-  var first = true;
-  filter_files(filter, function(err, row) {
-    // Process each file record
-    if (err) {
-      log.info("Found an err: " + JSON.stringify(err));
-      return next(err);
-    }
-    if (first) {
-      res.write('{ "files": [');
-      first = false;
-    } else {
-      res.write(",");
-    }
-    res.write('"' + row.file_name + "\"\n");
-  }, function(err, rowcount) {
-    // End of files, finish up.
-    if (err) {
-      log.info("Found an err on completion: " + JSON.stringify(err));
-      return next(err);
-    }
-    if (rowcount == 0) {
-      res.send(404, "No files matched your filter");
-    } else {
-      res.write('], "row_count": ' + rowcount + '}');
-      res.end();
-    }
-    return next();
-  });
-}
 
-function filter_files(filter, onfile, onend) {
-  // Iterate through matching files calling onfile(err, row) for each, then call onend(err, rowcount)
+  var jsonResponse = [];
+  function constructResponse(row) {
+    jsonResponse.push({"file_name" : row.file_name, "file_size" : row.file_size});
+  }
   var query = filter2sql(filter);
-  log.info("running query: " + JSON.stringify(query));
+
   pg.connect(connection_string, function(err, client, done) {
+
     if (err) {
       log.error(err);
       done();
-      onend(err, null);
-      return;
+      return next(err);
     }
 
     var cq = client.query(query.sql, query.params);
-    cq.on('row', function(row) {
+    cq.on('row', function (row) {
       log.trace("Retrieved one row: " + JSON.stringify(row));
-      onfile(null, row);
+      constructResponse(row);
     });
 
-    cq.on('end', function(result){
-      log.trace("Finished retrieving rows: " + JSON.stringify(result));
+    cq.on('end', function (result) {
+      log.trace("Finished retrieving rows: " + JSON.stringify(jsonResponse));
+      res.write(JSON.stringify(jsonResponse) +"\n");
+      res.end();
       done();
-      onend(null, result.rowCount);
+      return next();
     });
 
-    cq.on('error', function(err){
+    cq.on('error', function (err) {
       log.error(err);
       done();
-      onend(err, null);
+      log.info("Found an err on completion: " + JSON.stringify(err));
+      res.send(404, "No files matched your filter");
+      res.end();
+      return next(err);
     });
+    return next();
   });
 }
 

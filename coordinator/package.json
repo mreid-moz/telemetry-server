@@ -1,0 +1,10 @@
+{
+  "private":  true,
+  "dependencies": {
+    "bunyan" : "0.23.1",
+    "restify": "2.8.1"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
