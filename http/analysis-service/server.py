@@ -828,7 +828,7 @@ def monitor(instance_id):
         terminate_url   = abs_url_for('kill', instance_id = instance.id)
     )
 
-@app.route("/worker/kill/<instance_id>", methods=["GET"])
+@app.route("/worker/kill/<instance_id>", methods=["POST"])
 @login_required
 def kill(instance_id):
     # Check that the user logged in is also authorized to do this
