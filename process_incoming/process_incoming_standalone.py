@@ -25,9 +25,9 @@ from datetime import date, datetime
 from multiprocessing import Process, Queue
 from subprocess import Popen
 
-#import boto.sqs
-#from boto.exception import S3ResponseError
-#from boto.s3.connection import S3Connection
+import boto.sqs
+from boto.exception import S3ResponseError
+from boto.s3.connection import S3Connection
 
 from telemetry.convert import Converter, BadPayloadError
 from telemetry.persist import StorageLayout
@@ -36,7 +36,7 @@ from telemetry.telemetry_schema import TelemetrySchema
 from telemetry.util.compress import CompressedFile
 import telemetry.util.timer as timer
 import telemetry.util.files as fileutil
-#import telemetry.util.s3 as s3util
+import telemetry.util.s3 as s3util
 
 # Wait for processes to complete on their own
 def wait_for(logger, processes, label):
