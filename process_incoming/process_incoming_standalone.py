@@ -488,9 +488,10 @@ class ExportCompressedStep(PipeStep):
             base_dir, config, dry_run):
         self.dry_run = dry_run
         self.base_dir = base_dir
-        self.aws_key = config.get("aws_key", None)
-        self.aws_secret_key = config.get("aws_secret_key", None)
-        self.aws_bucket_name = config["publish_bucket"]
+        if not self.dry_run:
+            self.aws_key = config.get("aws_key", None)
+            self.aws_secret_key = config.get("aws_secret_key", None)
+            self.aws_bucket_name = config["publish_bucket"]
         PipeStep.__init__(self, num, name, q_in, log_file=log_file,
                 stats_file=stats_file)
 
@@ -663,7 +664,6 @@ def main():
             start = now()
             incoming_filenames = []
             incoming_queue_messages = []
-            logger.log("Fetching file list from queue " + config["incoming_queue"])
             if args.dry_run:
                 logger.log("Dry run mode... can't read from the queue " \
                            "without messing things up...")
@@ -672,6 +672,8 @@ def main():
                             args.input_files))
                     incoming_filenames = [ l.strip() for l in args.input_files.readlines() ]
             else:
+		logger.log("Fetching file list from queue " + config["incoming_queue"])
+
                 # Sometimes we don't get all the messages, even if more are
                 # available, so keep trying until we have enough (or there
                 # aren't any left)
