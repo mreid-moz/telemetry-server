@@ -37,8 +37,13 @@
   <div class="col-md-2"><strong>Terminate it here:</strong></div>
   <div class="col-md-10"><a href="{{ terminate_url }}">{{ terminate_url }}</a></div>
 </div>
+<div class="row">
+ <div class="col-md-2"><strong>Terminates automatically at:</strong></div>
+ <div class="col-md-10">{{ terminate_time }}</div>
+</div>
+
 <div>
-  <h3>Your cluster will be killed in 24 hours! Be sure to save any work!</h3>
+  <h3>Your cluster will be killed within {{ terminate_hours_left }} hours! Be sure to save any work!</h3>
 </div>
 <br>
 <p class="lead">Connecting:</p>
@@ -58,6 +63,9 @@
   LocalForward 8888 localhost:8888
   Identityfile ~/.ssh/{my-private-key}
 </pre>
+ To upload an existing notebook, use SCP:
+ <p><span class="no-select"><code>$ </code></span><code>scp -i my-private-key some-notebook.ipynb hadoop@{{ public_dns }}:~/analyses</code></p>
+ The notebook will then show up in the IPython files list.
 <p>
   Now you can launch your <a href="http://localhost:8888" target="_blank">
     IPython notebook</a> from Firefox.
