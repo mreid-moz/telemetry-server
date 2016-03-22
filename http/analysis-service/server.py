@@ -28,6 +28,8 @@ import os.path
 # Create flask app
 app = Flask(__name__)
 app.config.from_object('config')
+app.config.from_object('userquota')
+User._quotas = app.config['quotas']
 
 # Connect to AWS
 emr  = emr_connect(app.config['AWS_REGION'])
@@ -51,6 +53,7 @@ CRON_IDX_DOM  = 2
 CRON_IDX_MON  = 3
 CRON_IDX_DOW  = 4
 CRON_IDX_CMD  = 5
+
 
 def connect_db(db_url=None):
     if db_url is None:
@@ -588,11 +591,11 @@ def _validate_job_form(is_cluster, request, is_update=True, old_job=None):
         if is_cluster:
             try:
                 n_workers = int(request.form["num_workers"])
-                if n_workers <= 0 or n_workers > 30:
+                if current_user.is_worker_count_valid(n_workers,30):
                     raise Exception
                 job['num_workers'] = n_workers
             except:
-                errors["num_workers"] = "This field should be a positive number within [1, 20]."
+                errors["num_workers"] = "This field should be a positive number within [1, {}].".format(current_user.get_max_workers(30))
             job["commandline"] = request.form["commandline"]
             job["output_dir"] = ""
         else:
@@ -991,10 +994,10 @@ def cluster_spawn():
 
     try:
         n_workers = int(request.form["num_workers"])
-        if n_workers <= 0 or n_workers > 20:
+        if current_user.is_worker_count_valid(n_workers,20):
             raise Exception
     except:
-        errors["num_workers"] = "This field should be a positive number within [1, 20]."
+        errors["num_workers"] = "This field should be a positive number within [1, {}].".format(current_user.get_max_workers(20))
 
     # Check required file
     if not request.files['public-ssh-key']:
@@ -1014,6 +1017,7 @@ def cluster_spawn():
     out = check_output(["aws", "emr", "create-cluster",
                         "--region", app.config["AWS_REGION"],
                         "--name", request.form['token'],
+                        "--tags", "user='{}'".format(current_user.email)
                         "--instance-type", app.config["INSTANCE_TYPE"],
                         "--instance-count", str(n_instances),
                         "--service-role", "EMR_DefaultRole",
