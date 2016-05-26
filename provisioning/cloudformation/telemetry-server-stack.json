@@ -77,7 +77,8 @@
           ]
         },
         "Tags": [
-          { "Key": "Application", "Value": "telemetry-server",      "PropagateAtLaunch": true },
+          { "Key": "App",         "Value": "pipeline",              "PropagateAtLaunch": true },
+          { "Key": "Type",        "Value": "telemetry-webserver",   "PropagateAtLaunch": true },
           { "Key": "Name",        "Value": "telemetry-webserver",   "PropagateAtLaunch": true },
           { "Key": "Owner",       "Value": { "Ref": "SSHKeyName" }, "PropagateAtLaunch": true }
         ]
@@ -196,7 +197,8 @@
           ]
         },
         "Tags": [
-          { "Key": "Application", "Value": "telemetry-server",           "PropagateAtLaunch": true },
+          { "Key": "App",         "Value": "pipeline",                   "PropagateAtLaunch": true },
+          { "Key": "Type",        "Value": "telemetry-process-incoming", "PropagateAtLaunch": true },
           { "Key": "Name",        "Value": "telemetry-process-incoming", "PropagateAtLaunch": true },
           { "Key": "Owner",       "Value": { "Ref": "SSHKeyName" },      "PropagateAtLaunch": true }
         ]
@@ -277,7 +279,8 @@
           ]
         },
         "Tags": [
-          { "Key": "Application", "Value": "telemetry-server",                      "PropagateAtLaunch": true },
+          { "Key": "App",         "Value": "pipeline",                              "PropagateAtLaunch": true },
+          { "Key": "Type",        "Value": "telemetry-process-incoming-overflow-1", "PropagateAtLaunch": true },
           { "Key": "Name",        "Value": "telemetry-process-incoming-overflow-1", "PropagateAtLaunch": true },
           { "Key": "Owner",       "Value": { "Ref": "SSHKeyName" },                 "PropagateAtLaunch": true }
         ]

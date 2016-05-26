@@ -18,7 +18,8 @@
           AnalysisPublicCDNDomainName: "{{resources_cfn.stack_outputs.AnalysisPublicCDNDomainName}}"
           AnalysisPublicDomainName: "{{public_analysis_dns_name}}"
         tags:
-          App: "telemetry"
+          App: "pipeline"
+          Type: "telemetry-analysis-dashboard"
           Env: "{{env}}"
           Stack: "{{stack_name}}"
       register: promote

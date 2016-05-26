@@ -17,7 +17,8 @@
   "primary_server": true,
   "default_tags": {
     "Owner": "mreid",
-    "Application": "telemetry-server"
+    "App": "pipeline",
+    "Type": "telemetry-server"
   },
   "skip_termination": true
 }

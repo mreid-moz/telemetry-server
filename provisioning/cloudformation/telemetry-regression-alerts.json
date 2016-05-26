@@ -35,7 +35,8 @@
         "MaxSize":                 "1",
         "LoadBalancerNames":       [ { "Ref": "LoadBalancer" } ],
         "Tags": [
-          { "Key": "Application", "Value": "telemetry-server",              "PropagateAtLaunch": true },
+          { "Key": "App",         "Value": "pipeline",                      "PropagateAtLaunch": true },
+          { "Key": "Type",        "Value": "telemetry-regression-alerts",   "PropagateAtLaunch": true },
           { "Key": "Name",        "Value": "telemetry-regression-alerts",   "PropagateAtLaunch": true },
           { "Key": "Owner",       "Value": { "Ref": "SSHKeyName" },         "PropagateAtLaunch": true }
         ]

@@ -25,6 +25,7 @@ if [ "$(jq -r '.num_workers|type' < $JOB_CONFIG)" == "number" ]; then # Spark cl
     SSH_KEY=$(jq -r '.ssl_key_name' < "$JOB_CONFIG")
     OWNER=$(jq -r '.owner' < "$JOB_CONFIG")
     APP_TAG=$(jq -r '.application_tag' < "$JOB_CONFIG")
+    TYPE_TAG=$(jq -r '.type_tag' < "$JOB_CONFIG")
     INSTANCE_PROFILE=$(jq -r '.spark_instance_profile' < "$JOB_CONFIG")
     EMR_BUCKET=$(jq -r '.spark_emr_bucket' < "$JOB_CONFIG")
     SUBMIT_ARGS=$(jq -r '.commandline' < "$JOB_CONFIG")

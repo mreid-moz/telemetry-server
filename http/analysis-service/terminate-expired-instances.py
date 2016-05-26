@@ -11,7 +11,8 @@ ses = ses_connect(config.AWS_REGION)
 
 def main():
     reservations = ec2.get_all_reservations(
-        filters = {'tag:Application':  config.INSTANCE_APP_TAG}
+        filters = {'tag:App': config.INSTANCE_APP_TAG,
+                   'tag:Type': config.INSTANCE_TYPE_TAG}
     )
     for reservation in reservations:
         for instance in reservation.instances:

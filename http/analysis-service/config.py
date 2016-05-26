@@ -20,7 +20,8 @@ SPARK_EMR_BUCKET = 'example'
 EPHEMERAL_MAP      = { "/dev/xvdb": "ephemeral0", "/dev/xvdc": "ephemeral1" }
 SECURITY_GROUPS    = []
 INSTANCE_PROFILE   = 'telemetry-analysis-profile'
-INSTANCE_APP_TAG   = 'telemetry-analysis-worker-instance'
+INSTANCE_APP_TAG   = 'pipeline'
+INSTANCE_TYPE_TAG   = 'telemetry-analysis-worker-instance'
 EMAIL_SOURCE       = 'telemetry-alerts@mozilla.com'
 
 # Buckets for storing S3 data

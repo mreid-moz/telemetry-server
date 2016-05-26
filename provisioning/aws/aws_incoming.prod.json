@@ -17,7 +17,8 @@
   "name": "telemetry-process-incoming-v1-1",
   "default_tags": {
     "Owner": "mreid",
-    "Application": "telemetry-server"
+    "App": "pipeline",
+    "Type": "telemetry-server"
   },
   "ephemeral_map": {
     "/dev/xvdb": "ephemeral0",

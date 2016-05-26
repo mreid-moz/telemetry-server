@@ -188,7 +188,7 @@ class Launcher(object):
         if len(default_tags) > 0:
             self.conn.create_tags([instance.id], default_tags)
         # TODO:
-        # - find all instances where Owner = mreid and Application = telemetry-server
+        # - find all instances where Owner = mreid and App = pipeline and Type =~ telemetry
         # - get the highest number
         # - use the next one (or first unused one) for the current instance name.
         name_tag = {"Name": self.config["name"]}

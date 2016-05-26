@@ -13,7 +13,8 @@
   "name": "telemetry-server-base-pv",
   "default_tags": {
     "Owner": "mreid",
-    "Application": "telemetry-server"
+    "App": "pipeline",
+    "Type": "telemetry-server"
   },
   "add_aws_credentials": true,
   "skip_termination": true

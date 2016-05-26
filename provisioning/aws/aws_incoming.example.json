@@ -16,6 +16,7 @@
   "name": "mreid-telemetry-process-incoming-test",
   "default_tags": {
     "Owner": "mreid",
-    "Application": "telemetry-server"
+    "App": "pipeline",
+    "Type": "telemetry-server"
   }
 }

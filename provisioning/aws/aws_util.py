@@ -76,7 +76,7 @@ def create_instance(config, aws_key=None, aws_secret_key=None):
     if len(default_tags) > 0:
         conn.create_tags([instance.id], default_tags)
     # TODO:
-    # - find all instances where Owner = mreid and Application = telemetry-server
+    # - find all instances where Owner = mreid and App = pipeline and Type =~ telemetry
     # - get the highest number
     # - use the next one (or first unused one) for the current instance name.
     name_tag = {"Name": config["name"]}
