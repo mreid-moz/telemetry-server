@@ -1017,7 +1017,7 @@ def cluster_spawn():
                         "--instance-type", app.config["INSTANCE_TYPE"],
                         "--instance-count", str(n_instances),
                         "--service-role", "EMR_DefaultRole",
-                        "--ec2-attributes", "KeyName=mozilla_vitillo,InstanceProfile={}".format(app.config["SPARK_INSTANCE_PROFILE"]),
+                        "--ec2-attributes", "KeyName=mozilla_vitillo,InstanceProfile={},AdditionalMasterSecurityGroups=telemetry-spark,AdditionalSlaveSecurityGroups=telemetry-spark".format(app.config["SPARK_INSTANCE_PROFILE"]),
                         "--release-label", app.config["EMR_RELEASE"],
                         "--applications", "Name=Spark", "Name=Hive",
                         "--bootstrap-actions", "Path=s3://{}/bootstrap/telemetry.sh,Args=[\"--public-key\",\"{}\"]".format(app.config["SPARK_EMR_BUCKET"], pubkey),
