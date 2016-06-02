@@ -28,6 +28,7 @@ if [ "$(jq -r '.num_workers|type' < $JOB_CONFIG)" == "number" ]; then # Spark cl
     INSTANCE_PROFILE=$(jq -r '.spark_instance_profile' < "$JOB_CONFIG")
     EMR_BUCKET=$(jq -r '.spark_emr_bucket' < "$JOB_CONFIG")
     SUBMIT_ARGS=$(jq -r '.commandline' < "$JOB_CONFIG")
+    SPARK_SG_ID=sg-49e7212f # telemetry-spark in us-west-2
 
     if [ "${CODE##*.}" == "jar" ]; then
         STEP_ARGS=\["s3://${EMR_BUCKET}/steps/batch.sh","--job-name","$JOB_NAME","--jar","$CODE","--spark-submit-args","$SUBMIT_ARGS","--data-bucket","$DATA_BUCKET"\]
@@ -43,7 +44,7 @@ if [ "$(jq -r '.num_workers|type' < $JOB_CONFIG)" == "number" ]; then # Spark cl
         --instance-type $SLAVE_TYPE \
         --instance-count $N_WORKERS \
         --service-role EMR_DefaultRole \
-        --ec2-attributes KeyName=$SSH_KEY,InstanceProfile=$INSTANCE_PROFILE,AdditionalMasterSecurityGroups=telemetry-spark,AdditionalSlaveSecurityGroups=telemetry-spark \
+        --ec2-attributes KeyName=$SSH_KEY,InstanceProfile=$INSTANCE_PROFILE,AdditionalMasterSecurityGroups=$SPARK_SG_ID,AdditionalSlaveSecurityGroups=$SPARK_SG_ID \
         --tags "Owner=$OWNER Application=$APP_TAG" \
         --applications Name=Spark Name=Hive \
         --bootstrap-actions Path=s3://${EMR_BUCKET}/bootstrap/telemetry.sh,Args=\["--timeout","$TIMEOUT"\] \
