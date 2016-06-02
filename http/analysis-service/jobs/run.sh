@@ -43,7 +43,7 @@ if [ "$(jq -r '.num_workers|type' < $JOB_CONFIG)" == "number" ]; then # Spark cl
         --instance-type $SLAVE_TYPE \
         --instance-count $N_WORKERS \
         --service-role EMR_DefaultRole \
-        --ec2-attributes KeyName=$SSH_KEY,InstanceProfile=$INSTANCE_PROFILE \
+        --ec2-attributes KeyName=$SSH_KEY,InstanceProfile=$INSTANCE_PROFILE,AdditionalMasterSecurityGroups=telemetry-spark,AdditionalSlaveSecurityGroups=telemetry-spark \
         --tags "Owner=$OWNER Application=$APP_TAG" \
         --applications Name=Spark Name=Hive \
         --bootstrap-actions Path=s3://${EMR_BUCKET}/bootstrap/telemetry.sh,Args=\["--timeout","$TIMEOUT"\] \
