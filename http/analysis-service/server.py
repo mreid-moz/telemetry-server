@@ -1011,13 +1011,14 @@ def cluster_spawn():
 
     # Create EMR cluster
     n_instances = n_workers if n_workers == 1 else n_workers + 1
+    spark_sg_id = "sg-49e7212f" # telemetry-spark in us-west-2
     out = check_output(["aws", "emr", "create-cluster",
                         "--region", app.config["AWS_REGION"],
                         "--name", request.form['token'],
                         "--instance-type", app.config["INSTANCE_TYPE"],
                         "--instance-count", str(n_instances),
                         "--service-role", "EMR_DefaultRole",
-                        "--ec2-attributes", "KeyName=mozilla_vitillo,InstanceProfile={},AdditionalMasterSecurityGroups=telemetry-spark,AdditionalSlaveSecurityGroups=telemetry-spark".format(app.config["SPARK_INSTANCE_PROFILE"]),
+                        "--ec2-attributes", "KeyName=mozilla_vitillo,InstanceProfile={0},AdditionalMasterSecurityGroups={1},AdditionalSlaveSecurityGroups={1}".format(app.config["SPARK_INSTANCE_PROFILE"], spark_sg_id),
                         "--release-label", app.config["EMR_RELEASE"],
                         "--applications", "Name=Spark", "Name=Hive",
                         "--bootstrap-actions", "Path=s3://{}/bootstrap/telemetry.sh,Args=[\"--public-key\",\"{}\"]".format(app.config["SPARK_EMR_BUCKET"], pubkey),
