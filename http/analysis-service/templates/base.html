@@ -21,7 +21,7 @@
    <!-- Persona -->
    <script src="https://login.persona.org/include.js" type="text/javascript"></script>
 
-   <script type="text/javascript">{{ auth_script|safe }}</script>
+   <script src="{{ url_for('static', filename='auth_script.js') }}"></script>
    <script src="{{ url_for('static', filename='set_utcnow.js') }}"></script>
    <title>Telemetry Self-Serve Data Analysis</title>
   {% endblock %}
