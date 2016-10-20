@@ -7,7 +7,8 @@ FILES = $(shell find * -name "*.py") \
 		$(shell find * -name "*.sh") \
 		$(shell find * -name "*.css") \
 		$(shell find * -name "*.png") \
-		$(shell find * -name "*.html")
+		$(shell find * -name "*.html") \
+		$(shell find static -name "*.js")
 
 telemetry-analysis-service.tar.gz: $(FILES)
 	tar -czf $@ $^
