@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 from flask import Flask, render_template, g, request, redirect, url_for
 from flask.ext.login import LoginManager, login_required, current_user
 from flask.ext.browserid import BrowserID
+from flask_csp.csp import csp_default, csp_header
 from user import User, AnonymousUser
 from boto.emr import connect_to_region as emr_connect, BootstrapAction
 from boto.ec2 import connect_to_region as ec2_connect
@@ -24,6 +25,7 @@ import crontab
 import json
 import re
 import os.path
+import logging
 
 # Create flask app
 app = Flask(__name__)
@@ -51,6 +53,20 @@ CRON_IDX_DOM  = 2
 CRON_IDX_MON  = 3
 CRON_IDX_DOW  = 4
 CRON_IDX_CMD  = 5
+
+# Set default Content Security Policy
+csp_default().update({
+    "base-uri": "'none'",
+    "child-src" : "https://login.persona.org",
+    "default-src" : "'none'",
+    "img-src": "'self'",
+    "font-src": "https://netdna.bootstrapcdn.com",
+    "script-src": "'self' https://login.persona.org https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/jquery.validate.min.js",
+    "style-src": "'self' https://netdna.bootstrapcdn.com 'unsafe-inline'",
+    "report-uri": "/csp_report",
+    "report-only": True
+})
+
 
 def connect_db(db_url=None):
     if db_url is None:
@@ -776,10 +792,12 @@ def _view_job_data(is_cluster, job_id):
 
 # Routes
 @app.route('/', methods=["GET"])
+@csp_header()
 def index():
     return render_template('index.html')
 
 @app.route("/schedule", methods=["GET"])
+@csp_header()
 @login_required
 def schedule_job(errors=None, values=None):
     return _schedule_job(is_cluster=False, errors=errors, values=values)
@@ -790,26 +808,31 @@ def create_scheduled_job():
     return _create_scheduled_job(is_cluster=False)
 
 @app.route("/schedule/edit/<job_id>", methods=["GET","POST"])
+@csp_header()
 @login_required
 def edit_scheduled_job(job_id):
     return _edit_scheduled_job(is_cluster=False, job_id=job_id)
 
 @app.route("/schedule/delete/<job_id>", methods=["POST","GET","DELETE"])
+@csp_header()
 @login_required
 def delete_scheduled_job(job_id):
     return _delete_scheduled_job(is_cluster=False, job_id=job_id)
 
 @app.route("/schedule/logs/<job_id>", methods=["GET"])
+@csp_header()
 @login_required
 def view_job_logs(job_id):
     return _view_job_logs(is_cluster=False, job_id=job_id)
 
 @app.route("/schedule/data/<job_id>", methods=["GET"])
+@csp_header()
 @login_required
 def view_job_data(job_id):
     return _view_job_data(is_cluster=False, job_id=job_id)
 
 @app.route("/worker", methods=["GET"])
+@csp_header()
 @login_required
 def get_worker_params(errors=None, values=None):
     # Check that the user logged in is also authorized to do this
@@ -902,6 +925,7 @@ def spawn_worker_instance():
     return redirect(url_for('monitor', instance_id = instance.id))
 
 @app.route("/worker/monitor/<instance_id>", methods=["GET"])
+@csp_header()
 @login_required
 def monitor(instance_id):
     # Check that the user logged in is also authorized to do this
@@ -934,6 +958,7 @@ def monitor(instance_id):
     )
 
 @app.route("/worker/kill/<instance_id>", methods=["GET"])
+@csp_header()
 @login_required
 def kill(instance_id):
     # Check that the user logged in is also authorized to do this
@@ -965,6 +990,7 @@ def kill(instance_id):
     )
 
 @app.route("/cluster", methods=["GET"])
+@csp_header()
 @login_required
 def cluster_get_params(errors=None, values=None):
     # Check that the user logged in is also authorized to do this
@@ -1050,6 +1076,7 @@ def cluster_spawn():
     return redirect(url_for('cluster_monitor', jobflow_id = jobflow_id))
 
 @app.route("/cluster/monitor/<jobflow_id>", methods=["GET"])
+@csp_header()
 @login_required
 def cluster_monitor(jobflow_id):
     # Check that the user logged in is also authorized to do this
@@ -1080,6 +1107,7 @@ def cluster_monitor(jobflow_id):
     )
 
 @app.route("/cluster/kill/<jobflow_id>", methods=["GET"])
+@csp_header()
 @login_required
 def cluster_kill(jobflow_id):
     # Check that the user logged in is also authorized to do this
@@ -1106,6 +1134,7 @@ def cluster_kill(jobflow_id):
     )
 
 @app.route("/cluster/schedule", methods=["GET"])
+@csp_header()
 @login_required
 def cluster_schedule_job(errors=None, values=None):
     return _schedule_job(is_cluster=True, errors=errors, values=values)
@@ -1116,27 +1145,37 @@ def cluster_create_scheduled_job():
     return _create_scheduled_job(is_cluster=True)
 
 @app.route("/cluster/schedule/edit/<job_id>", methods=["GET","POST"])
+@csp_header()
 @login_required
 def cluster_edit_scheduled_job(job_id):
     return _edit_scheduled_job(is_cluster=True, job_id=job_id)
 
 @app.route("/cluster/schedule/delete/<job_id>", methods=["POST","GET","DELETE"])
+@csp_header()
 @login_required
 def cluster_delete_scheduled_job(job_id):
     return _delete_scheduled_job(is_cluster=True, job_id=job_id)
 
 @app.route("/cluster/schedule/logs/<job_id>", methods=["GET"])
+@csp_header()
 @login_required
 def cluster_view_job_logs(job_id):
     return _view_job_logs(is_cluster=True, job_id=job_id)
 
 @app.route("/cluster/schedule/data/<job_id>", methods=["GET"])
+@csp_header()
 @login_required
 def cluster_view_job_data(job_id):
     return _view_job_data(is_cluster=True, job_id=job_id)
 
 @app.route("/status", methods=["GET"])
+@csp_header()
 def status():
+    return "OK"
+
+@app.route("/csp_report", methods=["POST"])
+def csp_report():
+    csp_logger.warn(request.data)
     return "OK"
 
 login_manager.init_app(app)
@@ -1147,7 +1186,13 @@ if __name__ == '__main__':
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", default=80, type=int)
     parser.add_argument("--db-url", default='sqlite:///telemetry_analysis.db')
+    parser.add_argument("--csp-error-log", default='./csp_violations.log')
     args = parser.parse_args()
+
+    # Setup CSP report violation logger
+    csp_logger = logging.getLogger('csp_logger')
+    csp_logger.setLevel(logging.WARN)
+    csp_logger.addHandler(logging.FileHandler(args.csp_error_log))
 
     app.config.update(dict(
         DB_URL = args.db_url,
