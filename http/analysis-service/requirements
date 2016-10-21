@@ -4,7 +4,6 @@ docutils==0.12
 Flask==0.10.1
 Flask-BrowserID==0.0.4
 Flask-Login==0.3.2
-flask-csp==0.9
 futures==2.2.0
 itsdangerous==0.24
 Jinja2==2.8

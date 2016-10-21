@@ -269,6 +269,7 @@ Resources:
               "echo '        add_header X-Frame-Options \"DENY\"' >> /etc/nginx/sites-enabled/default\n",
               "echo '        add_header Cache-Control \"no-cache,no-store\"' >> /etc/nginx/sites-enabled/default\n",
               "echo '        add_header Pragma \"no-cache\"' >> /etc/nginx/sites-enabled/default\n",
+              "echo '        add_header Content-Security-Policy-Report-Only \"style-src 'self' https://netdna.bootstrapcdn.com 'unsafe-inline'; report-uri /csp_report; default-src 'none'; script-src 'self' https://login.persona.org https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/jquery.validate.min.js; img-src 'self';  child-src https://login.persona.org; font-src https://netdna.bootstrapcdn.com; base-uri 'none'\"' >> /etc/nginx/sites-enabled/default\n",
               "echo '}' >> /etc/nginx/sites-enabled/default\n",
               "service nginx restart\n",
               "sudo -u ubuntu uwsgi --chmod-socket=666 -s /tmp/uwsgi.sock --logto /tmp/analysis-service.log -w server:app\n"
