@@ -24,6 +24,7 @@ import crontab
 import json
 import re
 import os.path
+import logging
 
 # Create flask app
 app = Flask(__name__)
@@ -1139,6 +1140,11 @@ def cluster_view_job_data(job_id):
 def status():
     return "OK"
 
+@app.route("/csp_report", methods=["POST"])
+def csp_report():
+    csp_logger.warn(request.data)
+    return "OK"
+
 login_manager.init_app(app)
 browser_id.init_app(app)
 
@@ -1147,7 +1153,13 @@ if __name__ == '__main__':
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", default=80, type=int)
     parser.add_argument("--db-url", default='sqlite:///telemetry_analysis.db')
+    parser.add_argument("--csp-error-log", default='./csp_violations.log')
     args = parser.parse_args()
+
+    # Setup CSP report violation logger
+    csp_logger = logging.getLogger('csp_logger')
+    csp_logger.setLevel(logging.WARN)
+    csp_logger.addHandler(logging.FileHandler(args.csp_error_log))
 
     app.config.update(dict(
         DB_URL = args.db_url,

@@ -13,6 +13,7 @@ histogram_cache/
 http/analysis-service/analysis-resources.json
 http/analysis-service/analysis-service-stack.json
 http/analysis-service/telemetry-analysis-service.tar.gz
+http/analysis-service/csp_violations.log
 node_modules/
 htmlcov/
 histogram_tools.py
