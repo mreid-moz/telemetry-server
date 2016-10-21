@@ -264,6 +264,9 @@ Resources:
               "echo '                include uwsgi_params;' >> /etc/nginx/sites-enabled/default\n",
               "echo '                uwsgi_pass unix:/tmp/uwsgi.sock;' >> /etc/nginx/sites-enabled/default\n",
               "echo '        }' >> /etc/nginx/sites-enabled/default\n",
+              "echo '        add_header X-XSS-Protection \"1; mode=block\"' >> /etc/nginx/sites-enabled/default\n",
+              "echo '        add_header X-Content-Type-Options \"nosniff\"' >> /etc/nginx/sites-enabled/default\n",
+              "echo '        add_header X-Frame-Options \"DENY\"' >> /etc/nginx/sites-enabled/default\n",
               "echo '}' >> /etc/nginx/sites-enabled/default\n",
               "service nginx restart\n",
               "sudo -u ubuntu uwsgi --chmod-socket=666 -s /tmp/uwsgi.sock --logto /tmp/analysis-service.log -w server:app\n"
