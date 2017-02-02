@@ -34,10 +34,10 @@
   {% endif %}
  </div>
 </div>
-<div class="row">
+<form action="{{ terminate_url }}" method="POST" class="row">
  <div class="col-md-2"><strong>Terminate it here:</strong></div>
- <div class="col-md-10"><a href="{{ terminate_url }}">{{ terminate_url }}</a></div>
-</div>
+ <div class="col-md-10"><input type="submit" value="Terminate Now"></div>
+</form>
 <div>
 <div class="row">
  <div class="col-md-2"><strong>Terminates automatically at:</strong></div>

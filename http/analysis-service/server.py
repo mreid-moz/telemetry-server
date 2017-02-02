@@ -933,7 +933,7 @@ def monitor(instance_id):
         terminate_hours_left = get_hours_remaining(terminate_time)
     )
 
-@app.route("/worker/kill/<instance_id>", methods=["GET"])
+@app.route("/worker/kill/<instance_id>", methods=["POST"])
 @login_required
 def kill(instance_id):
     # Check that the user logged in is also authorized to do this
